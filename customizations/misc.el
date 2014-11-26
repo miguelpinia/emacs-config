@@ -1,12 +1,14 @@
-;; Changes all yes/no questions to y/n type
+;; Cambia todas las preguntas yes/no to y/n
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; shell scripts
 (setq-default sh-basic-offset 2)
 (setq-default sh-indentation 2)
 
-;; No need for ~ files when editing
+;; No crear archivos ~ mientras editas.
 (setq create-lockfiles nil)
 
-;; Go straight to scratch buffer on startup
 (setq inhibit-startup-message t)
+
+;; Permite usar acentos en emacs áéíóúüä
+(require 'iso-transl)

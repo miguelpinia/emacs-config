@@ -1,70 +1,70 @@
-;; These customizations change the way emacs looks and disable/enable
-;; some user interface elements. Some useful customizations are
-;; commented out, and begin with the line "CUSTOMIZE". These are more
-;; a matter of preference and may require some fiddling to match your
-;; preferences
+;; Estás personalizaciones hace que emacs se vea diferente y
+;; habilita/deshabilita algunas interfaces de usuario.
 
-;; Turn off the menu bar at the top of each frame because it's distracting
+;; Inhabilita la barra de menus
 (menu-bar-mode -1)
 
-;; Show line numbers
-(global-linum-mode)
+;; Inhabilita la barra de herramientas
+(when (fboundp 'scroll-bar-mode)
+  (tool-bar-mode -1))
 
-;; You can uncomment this to remove the graphical toolbar at the top. After
-;; awhile, you won't need the toolbar.
-;; (when (fboundp 'tool-bar-mode)
-;;   (tool-bar-mode -1))
+
+;; Muestra números de líneas.
+(global-linum-mode)
 
 ;; Don't show native OS scroll bars for buffers because they're redundant
 (when (fboundp 'scroll-bar-mode)
   (scroll-bar-mode -1))
 
-;; Color Themes
-;; Read http://batsov.com/articles/2012/02/19/color-theming-in-emacs-reloaded/
-;; for a great explanation of emacs color themes.
+;; Temas para emacs.
+;; Leer http://batsov.com/articles/2012/02/19/color-theming-in-emacs-reloaded/
+;; para tener una mejor explicación de los temas de emacs.
 ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Custom-Themes.html
-;; for a more technical explanation.
+;; Para una explicación más técnica.
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
 (add-to-list 'load-path "~/.emacs.d/themes")
 (load-theme 'tomorrow-night-bright t)
 
-;; increase font size for better readability
-(set-face-attribute 'default nil :height 140)
+;; Incrementa el tamaño de la fuente para una mejor lectura
+(set-face-attribute 'default nil :height 145)
 
-;; Uncomment the lines below by removing semicolons and play with the
-;; values in order to set the width (in characters wide) and height
-;; (in lines high) Emacs will have whenever you start it
+;; Descomente las siguientes para establecer el ancho (número de carácteres)
+;; y el alto (número de lineas).
 ;; (setq initial-frame-alist '((top . 0) (left . 0)
 ;;                             (width . 177) (height . 53)))
 
-;; These settings relate to how emacs interacts with your operating system
-(setq ;; makes killing/yanking interact with the clipboard
-      x-select-enable-clipboard t
+;; Estás configuración permiten a emacs interactuar con el sistema operativo
+(setq
+ ;; Permite que killing/yanking interactuen con el clipboard
+ x-select-enable-clipboard t
 
-      ;; I'm actually not sure what this does but it's recommended?
-      x-select-enable-primary t
+ ;; No estoy seguro que hace esto, pero es recomendable?
+ x-select-enable-primary t
 
-      ;; Save clipboard strings into kill ring before replacing them.
-      ;; When one selects something in another program to paste it into Emacs,
-      ;; but kills something in Emacs before actually pasting it,
-      ;; this selection is gone unless this variable is non-nil
-      save-interprogram-paste-before-kill t
+ ;; Save clipboard strings into kill ring before replacing them.
+ ;; When one selects something in another program to paste it into Emacs,
+ ;; but kills something in Emacs before actually pasting it,
+ ;; this selection is gone unless this variable is non-nil
+ save-interprogram-paste-before-kill t
 
-      ;; Shows all options when running apropos. For more info,
-      ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Apropos.html
-      apropos-do-all t
+ ;; Muestra todas las opciones cuando se ejecuta apropos. Para mayor información.
+ ;; https://www.gnu.org/software/emacs/manual/html_node/emacs/Apropos.html
+ apropos-do-all t
 
-      ;; Mouse yank commands yank at point instead of at click.
-      mouse-yank-at-point t)
+ ;; Mouse yank commands yank at point instead of at click.
+ mouse-yank-at-point t)
 
-;; No cursor blinking, it's distracting
+;; Evita que el cursor parpadee.
 (blink-cursor-mode 0)
 
-;; full path in title bar
+;; Path completo en la barra de títulos.
 (setq-default frame-title-format "%b (%f)")
 
-;; don't pop up font menu
+;; No muestra el menu de fuentes.
 (global-set-key (kbd "s-t") '(lambda () (interactive)))
 
-;; no bell
+;; No campanea.
 (setq ring-bell-function 'ignore)
+
+;; (require 'show-wspace)
+;; (show-ws-toggle-show-trailing-whitespace)

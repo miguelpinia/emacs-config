@@ -1,18 +1,18 @@
 ;;;;
-;; Clojure
+;; Clojures
 ;;;;
 
-;; Enable paredit for Clojure
+;; Establece paredit para Clojure
 (add-hook 'clojure-mode-hook 'enable-paredit-mode)
 
-;; This is useful for working with camel-case tokens, like names of
-;; Java classes (e.g. JavaClassName)
+;; Esto es de ayuda cuando se manejan cadenas camel-case como los nombres en java
+;; (e.g. JavaClassName)
 (add-hook 'clojure-mode-hook 'subword-mode)
 
-;; A little more syntax highlighting
+;; Un poco más de resaltado de sintaxis.
 (require 'clojure-mode-extra-font-locking)
 
-;; syntax hilighting for midje
+;; Resaltado de sintaxis para midje
 (add-hook 'clojure-mode-hook
           (lambda ()
             (setq inferior-lisp-program "lein repl")
@@ -29,26 +29,26 @@
 ;; Cider
 ;;;;
 
-;; provides minibuffer documentation for the code you're typing into the repl
+;; Provee documentación en el minibuffer para código que estás escribiendo en el repl
 (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
 
-;; go right to the REPL buffer when it's finished connecting
+;; Va directo al buffer REPL cuando se ha terminado de conectar
 (setq cider-repl-pop-to-buffer-on-connect t)
 
-;; When there's a cider error, show its buffer and switch to it
+;; Cuando hay un error en cider, muestra su buffer y cambiate a él.
 (setq cider-show-error-buffer t)
 (setq cider-auto-select-error-buffer t)
 
-;; Where to store the cider history.
+;; Donde se almacena la historia de cider.
 (setq cider-repl-history-file "~/.emacs.d/cider-history")
 
-;; Wrap when navigating history.
+;; .
 (setq cider-repl-wrap-history t)
 
-;; enable paredit in your REPL
+;; Activa el paredit en REPL
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
 
-;; Use clojure mode for other extensions
+;; Usa clojure para otras extensiones.
 (add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
 (add-to-list 'auto-mode-alist '("\\.cljs.*$" . clojure-mode))
@@ -56,7 +56,7 @@
 
 
 ;; key bindings
-;; these help me out with the way I usually develop web apps
+;; Esto ayuda cuando se desarrollan web apps
 (defun cider-start-http-server ()
   (interactive)
   (cider-load-current-buffer)

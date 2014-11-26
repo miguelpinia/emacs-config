@@ -1,6 +1,6 @@
-;; Customizations relating to editing a buffer.
+;; Personalización relacionada a la edición de buffers
 
-;; Key binding to use "hippie expand" for text autocompletion
+;; Combinación de teclas para usar "hippie expand" para autocompletado
 ;; http://www.emacswiki.org/emacs/HippieExpand
 (global-set-key (kbd "M-/") 'hippie-expand)
 
@@ -12,49 +12,48 @@
         try-complete-lisp-symbol-partially
         try-complete-lisp-symbol))
 
-;; Highlights matching parenthesis
+;; Resaltado de matching de parentesis
 (show-paren-mode 1)
 
-;; Highlight current line
+;; Resaltado de la línea actual.
 (global-hl-line-mode 1)
 
-;; Interactive search key bindings. By default, C-s runs
-;; isearch-forward, so this swaps the bindings.
+;; Keybindings para búsqueda interactiva. Por default, C-s ejecuta
+;; isearch-forward.
 (global-set-key (kbd "C-s") 'isearch-forward-regexp)
 (global-set-key (kbd "C-r") 'isearch-backward-regexp)
 (global-set-key (kbd "C-M-s") 'isearch-forward)
 (global-set-key (kbd "C-M-r") 'isearch-backward)
 
-;; Don't use hard tabs
+;; No usar tabs duros
 (setq-default indent-tabs-mode nil)
 
-;; When you visit a file, point goes to the last place where it
-;; was when you previously visited the same file.
+;; Cuando tu abres un archivo, te lleva al último lugar donde estuviste editándolo.
 ;; http://www.emacswiki.org/emacs/SavePlace
 (require 'saveplace)
 (setq-default save-place t)
-;; keep track of saved places in ~/.emacs.d/places
+;; mantiene la lista de lugares en ~/.emacs.d/places
 (setq save-place-file (concat user-emacs-directory "places"))
 
-;; Emacs can automatically create backup files. This tells Emacs to
-;; put all backups in ~/.emacs.d/backups. More info:
+;; Emacs puede crear respaldos de archivos automáticamente. Esto le dice a emacs
+;; que los debe almacenar en  ~/.emacs.d/backups. Más información:
 ;; http://www.gnu.org/software/emacs/manual/html_node/elisp/Backup-Files.html
 (setq backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups"))))
 (setq auto-save-default nil)
 
 
-;; comments
+;; Comentarios
 (defun toggle-comment-on-line ()
-  "comment or uncomment current line"
+  "Comenta o descomenta la línea actual"
   (interactive)
   (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
 (global-set-key (kbd "C-;") 'toggle-comment-on-line)
 
-;; yay rainbows!
+;; yay arcoiris!
 (global-rainbow-delimiters-mode t)
 
-;; use 2 spaces for tabs
+;; usa 2 espacios para los tabs
 (defun die-tabs ()
   (interactive)
   (set-variable 'tab-width 2)
@@ -70,3 +69,6 @@
     (quit nil)))
 
 (setq electric-indent-mode nil)
+
+;; Elimina espacios en blanco al guardar
+(add-hook 'before-save-hook 'delete-trailing-whitespace)

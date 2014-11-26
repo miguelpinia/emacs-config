@@ -101,50 +101,37 @@
 ;; Customización
 ;;;;
 
-;; Add a directory to our load path so that when you `load` things
-;; below, Emacs knows where to look for the corresponding file.
+;; Añade un directorio para añadir nuestro path de carga para cuando quieras "cargar" cosas
+;; después, Emacs sabrá donde buscar por el archivo correspondiente.
 (add-to-list 'load-path "~/.emacs.d/customizations")
 
-;; Sets up exec-path-from-shell so that Emacs will use the correct
-;; environment variables
+;; Configura el exec-path-from-shell para que emacs pueda usar las
+;; variables de entorno correctas
 (load "shell-integration.el")
 
-;; These customizations make it easier for you to navigate files,
-;; switch buffers, and choose options from the minibuffer.
+;; Estás personalización hacen fácil el navegar entre archivos, intercambiar entre buffers,
+;; y elegir opciones desde el minibuffer.
 (load "navigation.el")
 
-;; These customizations change the way emacs looks and disable/enable
-;; some user interface elements
+;; Estas configuraciones cambian la forma en que emacs se ve. Además
+;; de habilitar y deshabilitar algunos elementos de la interfaz de usuario.
 (load "ui.el")
 
-;; These customizations make editing a bit nicer.
+;; Está personalización hace que la edición sea un poco más bonita.
 (load "editing.el")
 
-;; Hard-to-categorize customizations
+;; Personalizaciones dificiles de categorizar.
 (load "misc.el")
 
-;; For editing lisps
+;; Para editar lisps.
 (load "elisp-editing.el")
 
-;; Langauage-specific
+;; Language-specific
 (load "setup-clojure.el")
 (load "setup-js.el")
 
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(coffee-tab-width 2))
 
-;; Inhabilita la barra de herramientas
-(tool-bar-mode -1)
-
-;; Permite usar acentos en emacs áéíóúüä
-(require 'iso-transl)
-
-;; Elimina espacios en blanco al guardar
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
 ;; Usa WhiteSpace
-(require 'whitespace)
+;;(require 'whitespace)

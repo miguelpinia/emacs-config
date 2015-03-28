@@ -1,0 +1,265 @@
+#+BLOG: wordpress
+#+POSTID: 270
+#+DATE: [2015-03-27 vie 14:30]
+#+TITLE: Configuración de emacs a través de org-mode
+#+AUTHOR: Miguel Angel Piña Avelino
+#+EMAIL: miguel_pinia@ciencias.unam.mx
+#+STARTUP: indent
+#+SETUPFILE: ~/proyectos/org-html-themes/setup/bigblow-pirilampo.setup
+#+LANGUAGE: es
+#+OPTIONS: author:miguelpinia email:miguel_pinia@ciencias.unam.mx creator:nil timestamp:nil
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LANGUAGE: es
+#+TAGS: MIGUEL(L) PIÑA(P) noexport(n)
+
+Esta es mi configuración de =emacs=, la cuál pongo a disposición para que todo
+aquel que esté interesando pueda tomarla como referencia o usarla para su uso
+propio. Esta configuración corresponde a lo que va en mi =~/.emacs.d/init.el=.
+* Instrucciones de intalación
+
+Para hacer uso de esta configuración, necesitas lo siguiente:
+
+- Una copia de este documento.
+- Emacs 24 (> 24.3)
+- Org-mode (> 8.2)
+
+Algo que no puedo asegurar, es el correcto funcionamiento de esta configuración
+en otros sistemas operativos distintos de linux.
+
+Una vez que tengas la copia de este documento, tu puedes copiarla en
+=~/.emacs.d/init.org=. Entonces dentro de emacs teclea =M-x org-babel-load-file=.
+=M-x= significa =Alt= y =x= presionados al mismo tiempo, seguido de la Instrucción
+=org-babel-load-file= en el sub-buffer de emacs. Esto debería de evaluar todo el
+código =emacs-lisp= que se encuentra en este documento.
+
+Si eventualmente hay cambios sobre el código de este documento, basta con presionar
+=C-c i=.
+
+
+* Elpa
+
+Lo primero es definir las fuentes de donde obtendremos nuestros paquetes.
+He definido 4 fuentes:
+- [[http://marmalade-repo.org/packages/][Marmalade]]
+- [[http://tromey.com/elpa/][Tromey]]
+- [[http://elpa.gnu.org/packages/][Elpa]]
+- [[http://melpa.milkbox.net/packages/][Melpa]]
+
+#+begin_src emacs-lisp
+(require 'package)
+(add-to-list 'package-archives
+	     '("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives
+             '("tromey" . "http://tromey.com/elpa/") t)
+(add-to-list 'package-archives
+	     '("elpa" . "http://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives
+            '("melpa" . "http://melpa.milkbox.net/packages/") t)
+
+#+end_src
+Una vez añadidos los repositorios de nuestros paquetes, hay que definir
+cuales van a ser los paquetes que vamos a utilizar y como los vamos a cargar
+de manera *automática*.
+#+begin_src emacs-lisp
+(package-initialize)
+(when (not package-archive-contents)
+  (package-refresh-contents))
+(defvar my-packages
+  '(auto-package-update
+    nyan-mode
+    nyan-prompt
+    rainbow-delimiters
+    flymake
+    column-enforce-mode
+    diminish
+    saveplace
+    highlight-chars
+    neotree
+    auto-complete
+    apropos-fn+var
+    autopair
+    yasnippet
+    flycheck
+    paredit
+    magit
+    ido-ubiquitous
+    smex
+    find-file-in-repository
+    projectile
+    auctex
+    ac-math
+    auto-complete-auctex
+    xml-rpc
+    metaweblog
+    org2blog
+    htmlize
+    netrc
+    tagedit
+    deferred
+    python-mode
+    ipython
+    jedi
+    ein
+    ein-mumamo
+    clojure-mode
+    clojure-mode-extra-font-locking
+    cider
+    web-mode
+    php-mode
+    coffee-mode
+    markdown-mode
+    markdown-mode+
+    ack
+    cdlatex
+    ob-sml
+    jabber
+    alert
+    interleave
+))
+(dolist (p my-packages)
+  (when (not (package-installed-p p))
+    (package-install p)))
+#+end_src
+
+* Interfaz gráfica
+
+Algo que siempre me recriminan es la cuestión de que emacs se ve muy viejo. ¡El
+problema es qué ellos no saben que altamente configurable y personalizable!
+
+Entonces, después de configurar hay que añadir los siguientes paquetes para
+comenzar a jugar con la interfaz de emacs.
+
+#+begin_src emacs-lisp
+(require 'flymake)
+(require 'nyan-mode)
+(require 'nyan-prompt)
+(require 'rainbow-delimiters)
+(require 'column-enforce-mode)
+#+end_src
+
+Establecemos el tamaño que tendrá al iniciar emacs.
+
+#+begin_src emacs-lisp
+(when window-system (set-frame-size (selected-frame) 80 36))
+#+end_src
+Establecemos una fuente agradable
+#+begin_src emacs-lisp
+(set-frame-font "Monofur 14")
+#+end_src
+Indicamos que queremos ver el número de lineas.
+#+begin_src emacs-lisp
+(global-linum-mode)
+#+end_src
+Indicamos que durante la edición podamos el número de linea y el número de
+columna en el que estamos trabajando
+#+begin_src emacs-lisp
+(setq column-number-mode t)
+#+end_src
+Cargamos los temas que vamos a aplicarle a emacs.
+#+begin_src emacs-lisp
+(add-to-list 'custom-theme-load-path "~/.emacs.d/temas")
+(add-to-list 'load-path "~/.emacs.d/temas")
+(load-theme 'tomorrow-night-bright t)
+#+end_src
+Indicamos que el título de la ventana va a ser el path del archivo que estamos
+editando en el buffer actual.
+#+begin_src emacs-lisp
+(setq-default frame-title-format "%b (%f)")
+#+end_src
+Una de las características que menos me gusta, es que el cursor se encuentre
+parpadeando, por lo que lo vamos a quitar. Así como que cada vez que hace una
+evaluación campaneé.
+#+begin_src emacs-lisp
+(blink-cursor-mode 0)
+(setq ring-bell-function 'ignore)
+#+end_src
+Indicamos que resalte la linea actual
+#+begin_src emacs-lisp
+(global-hl-line-mode 1)
+#+end_src
+Quéremos que resalte los paréntesis y sus matchs.
+#+begin_src emacs-lisp
+(show-paren-mode 1)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+#+end_src
+Inhabilitamos la barra de menús y de herramientas
+#+begin_src emacs-lisp
+(menu-bar-mode -1)
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1))
+#+end_src
+Definimos una función para ingresar a pantalla completa.
+#+begin_src emacs-lisp
+(defun fullscreen ()
+  "TO-DO."
+  (interactive)
+  (set-frame-parameter nil 'fullscreen
+                       (if (frame-parameter nil 'fullscreen) nil 'fullboth)))
+(global-set-key [f11] 'fullscreen)
+#+end_src
+Quiero que me enseñe el estado de la batería de la laptop, así como la hora
+actual.
+#+begin_src emacs-lisp
+(display-battery-mode t)
+(display-time-mode)
+#+end_src
+
+Utilizamos a Nyan-Cat como indicador de la posición en el buffer.
+#+begin_src emacs-lisp
+(nyan-mode t)
+(nyan-start-animation)
+(setq nyan-wavy-trail t)
+#+end_src
+
+Limpiamos el mode-line
+#+begin_src emacs-lisp
+(defvar mode-line-cleaner-alist
+  `((auto-complete-mode . " α")
+    (yas/minor-mode . " υ")
+    (paredit-mode . " π")
+    (eldoc-mode . "")
+    (column-enforce-mode . " 80")
+    (abbrev-mode . "")
+    (lisp-interaction-mode . " λ")
+    (hi-lock-mode . "")
+    (python-mode . " Π")
+    (emacs-lisp-mode . " ε")
+    (nxhtml-mode . " nx")
+    (fundamental-mode . " F")
+    (latex-mode . " Φ")
+    (flycheck-mode . " Γ")
+    (magit-auto-revert-mode . " gR")
+    (yas-global-mode . " ψ")
+    (yas-minor-mode . " ψ")
+    (projectile-mode . " ρ"))
+  "Una lista para 'clean-mode-line'.")
+
+(defun clean-mode-line ()
+  "TO-DO."
+  (interactive)
+  (loop for cleaner in mode-line-cleaner-alist
+        do (let* ((mode (car cleaner))
+                 (mode-str (cdr cleaner))
+                 (old-mode-str (cdr (assq mode minor-mode-alist))))
+             (when old-mode-str
+                 (setcar old-mode-str mode-str))
+             (when (eq mode major-mode)
+               (setq mode-name mode-str)))))
+(add-hook 'after-change-major-mode-hook 'clean-mode-line)
+
+(defalias 'flymake-report-status 'flymake-report-status-slim)
+(defun flymake-report-status-slim (e-w &optional status)
+  "Show \"slim\" flymake status in mode line. E-W as. STATUS as."
+  (when e-w
+    (setq flymake-mode-line-e-w e-w))
+  (when status
+    (setq flymake-mode-line-status status))
+  (let* ((mode-line " Φ"))
+    (when (> (length flymake-mode-line-e-w) 0)
+      (setq mode-line (concat mode-line ":" flymake-mode-line-e-w)))
+    (setq mode-line (concat mode-line flymake-mode-line-status))
+    (setq flymake-mode-line mode-line)
+    (force-mode-line-update)))
+#+end_src

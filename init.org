@@ -11,7 +11,7 @@
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+LANGUAGE: es
-#+TAGS: MIGUEL(L) PIÑA(P) noexport(n)
+#+TAGS: Configuración de Emacs
 
 Esta es mi configuración de =emacs=, la cuál pongo a disposición para que todo
 aquel que esté interesando pueda tomarla como referencia o usarla para su uso
@@ -37,7 +37,7 @@ Si eventualmente hay cambios sobre el código de este documento, basta con presi
 =C-c i=.
 
 
-* Elpa
+* Repositorios
 
 Lo primero es definir las fuentes de donde obtendremos nuestros paquetes.
 He definido 4 fuentes:
@@ -262,4 +262,256 @@ Limpiamos el mode-line
     (setq mode-line (concat mode-line flymake-mode-line-status))
     (setq flymake-mode-line mode-line)
     (force-mode-line-update)))
+#+end_src
+
+* Edición
+
+Agregamos todos los paquetes que vayamos a necesitar
+
+#+begin_src clojure
+(require 'saveplace)
+(require 'highlight-chars)
+(require 'neotree)
+(require 'auto-complete)
+(require 'autopair)
+(require 'yasnippet)
+(require 'flycheck)
+(require 'apropos)
+(require 'auto-complete-config)
+(require 'iso-transl)
+(require 'undo-tree)
+#+end_src
+
+Verificamos la sintaxis de código al /vuelo/.
+
+#+begin_src clojure
+(global-flycheck-mode t)
+#+end_src
+
+No usamos tabs duros.
+#+begin_src clojure
+(setq-default indent-tabs-mode nil)
+#+end_src
+Configuramos a emacs de tal forma que pueda compartir el clipboard con
+el sistema operativo.
+#+begin_src clojure
+(setq
+ x-select-enable-clipboard t
+ x-select-enable-primary t
+ save-interprogram-paste-before-kill t
+ apropos-do-all t
+ mouse-yank-at-point t)
+#+end_src
+Configuramos la búsqueda en el buffer.
+#+begin_src clojure
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "C-r") 'isearch-backward-regexp)
+(global-set-key (kbd "C-M-s") 'isearch-forward)
+(global-set-key (kbd "C-M-r") 'isearch-backward)
+#+end_src
+Una característica que me gustaba de mis anteriores editores es el duplicar
+una linea  de código.
+#+begin_src clojure
+(global-set-key "\C-c\C-d" "\C-a\C- \C-n\M-w\C-y")
+#+end_src
+Creamos respaldos automáticos y la posición donde te quedaste en cada uno de
+los archivos.
+#+begin_src clojure
+(setq backup-directory-alist
+      `(("." . ,(concat user-emacs-directory "backups"))))
+(setq auto-save-default nil)
+(setq-default save-place t)
+(setq save-place-file (concat user-emacs-directory "places"))
+#+end_src
+Una buena práctica es evitar dejar espacios en blanco innecesarios.
+A continuación la configuración para quitar esos espacios al guardar.
+#+begin_src clojure
+(add-hook 'font-lock-mode-hook 'hc-highlight-trailing-whitespace)
+(add-hook 'LaTeX-mode-hook 'hc-highlight-trailing-whitespace)
+(add-hook 'latex-mode-hook 'hc-highlight-trailing-whitespace)
+(add-hook 'python-mode-hook 'hc-highlight-trailing-whitespace)
+(add-hook 'prog-mode-hook 'hc-highlight-trailing-whitespace)
+(add-hook 'prog-mode-hook
+           (lambda ()
+             (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
+(add-hook 'LaTeX-mode-hook
+           (lambda ()
+             (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
+(add-hook 'LaTeX-mode-hook
+          (lambda ()
+            (add-to-list 'write-file-functions 'delete-blank-lines)))
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (add-to-list 'write-file-functions 'delete-blank-lines)))
+#+end_src
+Resaltado de caracteres a partir de la columna 80.
+#+begin_src clojure
+(add-hook 'LaTeX-mode-hook 'column-enforce-mode)
+(add-hook 'python-mode-hook 'column-enforce-mode)
+(add-hook 'prog-mode-hook 'column-enforce-mode)
+#+end_src
+Comentarios
+#+begin_src clojure
+;; Comentarios
+(defun toggle-comment-on-line ()
+  "Comenta o descomenta la línea actual."
+  (interactive)
+  (comment-or-uncomment-region (line-beginning-position) (line-end-position)))
+(global-set-key (kbd "C-;") 'toggle-comment-on-line)
+#+end_src
+Otros
+#+begin_src clojure
+(defun die-tabs ()
+  "Usa sólo 2 espacios para los tabs."
+  (interactive)
+  (set-variable 'tab-width 2)
+  (mark-whole-buffer)
+  (untabify (region-beginning) (region-end))
+  (keyboard-quit))
+(global-set-key [f8] 'neotree-toggle)
+(put 'downcase-region 'disabled nil)
+(setq create-lockfiles nil)
+(setq inhibit-startup-message t)
+(defvar ack-history nil
+  "History for the `ack' command.")
+(defun revert-buffer-no-confirm ()
+    "Revert buffer without confirmation."
+    (interactive)
+    (revert-buffer t t))
+(global-set-key (kbd "C-c r") 'revert-buffer-no-confirm)
+(global-undo-tree-mode)
+(global-set-key (kbd "C-c _") 'undo-tree-visualize)
+#+end_src
+Autocompletado
+#+begin_src clojure
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/custom/dict")
+(set-default 'ac-sources
+             '(ac-source-abbrev
+               ac-source-dictionary
+               ac-source-yasnippet
+               ac-source-words-in-buffer
+               ac-source-words-in-same-mode-buffers
+               ac-source-semantic))
+
+(ac-config-default)
+
+(dolist (m '(c-mode c++-mode java-mode org-mode))
+  (add-to-list 'ac-modes m))
+
+(global-auto-complete-mode t)
+;; auto-complete mode extra settings
+(setq ac-auto-start 2)
+(setq ac-use-overriding-local-map nil)
+(setq ac-use-menu-map t)
+(setq ac-candidate-limit 20)
+
+#+end_src
+Paredit
+#+begin_src clojure
+(autoload 'enable-paredit-mode "paredit"
+  "Turn on pseudo-structural editing of Lisp code." t)
+(add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+(add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+(add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+(add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+(add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+(add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+#+end_src
+Soporte para org-mode
+#+begin_src clojure
+(require 'org)
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(setq org-log-done t)
+(setq org-agenda-files (list "~/org/alimentarias.org"
+                             "~/org/estacionamiento.org"
+                             "~/org/casa.org"
+                             "~/org/IngenieríaSoftware.org"
+                             "~/org/labsom.org"
+                             "~/org/todo.org"))
+(defvar count-words-buffer
+  nil
+  "*Number of words in the buffer.")
+(defun wicked/update-wc ()
+  "Whatever."
+  (interactive)
+  (setq count-words-buffer (number-to-string (count-words-buffer)))
+  (force-mode-line-update))
+(unless count-words-buffer
+(run-with-idle-timer 1 t 'wicked/update-wc))
+(unless (memq 'count-words-buffer global-mode-string)
+  (add-to-list 'global-mode-string "words: " t)
+  (add-to-list 'global-mode-string 'count-words-buffer t))
+(defun count-words-buffer ()
+  "Count the number of words in the current paragraph."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (let ((count 0))
+      (while (not (eobp))
+	(forward-word 1)
+        (setq count (1+ count)))
+      count)))
+(defun wicked/org-update-checkbox-count (&optional all)
+  "Update the checkbox statistics in the current section.
+This will find all statistic cookies like [57%] and [6/12] and update
+them with the current numbers.  With optional prefix argument ALL,
+do this for the whole buffer."
+  (interactive "P")
+  (save-excursion
+    (let* ((buffer-invisibility-spec (org-inhibit-invisibility))
+	   (beg (condition-case nil
+		    (progn (outline-back-to-heading) (point))
+		  (error (point-min))))
+	   (end (move-marker
+		 (make-marker)
+		 (progn (or (outline-get-next-sibling) ;; (1)
+			    (goto-char (point-max)))
+			(point))))
+	   (re "\\(\\[[0-9]*%\\]\\)\\|\\(\\[[0-9]*/[0-9]*\\]\\)")
+	   (re-box
+	    "^[ \t]*\\(*+\\|[-+*]\\|[0-9]+[.)]\\) +\\(\\[[- X]\\]\\)")
+	   b1 e1 f1 c-on c-off lim (cstat 0))
+      (when all
+	(goto-char (point-min))
+	(or (outline-get-next-sibling) (goto-char (point-max))) ;; (2)
+	(setq beg (point) end (point-max)))
+      (goto-char beg)
+      (while (re-search-forward re end t)
+	(setq cstat (1+ cstat)
+	      b1 (match-beginning 0)
+	      e1 (match-end 0)
+	      f1 (match-beginning 1)
+	      lim (cond
+		   ((org-on-heading-p)
+		    (or (outline-get-next-sibling) ;; (3)
+			(goto-char (point-max)))
+		    (point))
+		   ((org-at-item-p) (org-end-of-item) (point))
+		   (t nil))
+	      c-on 0 c-off 0)
+	(goto-char e1)
+	(when lim
+	  (while (re-search-forward re-box lim t)
+	    (if (member (match-string 2) '("[ ]" "[-]"))
+		(setq c-off (1+ c-off))
+	      (setq c-on (1+ c-on))))
+	  (goto-char b1)
+	  (insert (if f1
+		      (format "[%d%%]" (/ (* 100 c-on)
+					  (max 1 (+ c-on c-off))))
+		    (format "[%d/%d]" c-on (+ c-on c-off))))
+	  (and (looking-at "\\[.*?\\]")
+	       (replace-match ""))))
+      (when (interactive-p)
+	(message "Checkbox statistics updated %s (%d places)"
+		 (if all "in entire file" "in current outline entry")
+		 cstat)))))
+(defadvice org-update-checkbox-count (around wicked activate)
+  "Fix the built-in checkbox count to understand headlines."
+  (setq ad-return-value
+	(wicked/org-update-checkbox-count (ad-get-arg 1))))
 #+end_src

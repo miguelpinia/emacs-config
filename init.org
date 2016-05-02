@@ -514,6 +514,8 @@ do this for the whole buffer."
 	(wicked/org-update-checkbox-count (ad-get-arg 1))))
 #+end_src
 
+Configuración para usar helm en lugar de ido.
+
 #+begin_src emacs-lisp
 (require 'helm)
 (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
